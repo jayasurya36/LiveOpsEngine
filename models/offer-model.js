@@ -7,7 +7,7 @@ const offerSchema = new mongoose.Schema({
     offer_image: { type: String, required: true },
     offer_sort_order: { type: Number },
     content: {
-        item_id: mongoose.Schema.Types.ObjectId,
+        item: String,
         quantity: Number,
     },
     schedule: {

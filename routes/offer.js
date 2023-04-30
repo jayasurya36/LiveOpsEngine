@@ -21,7 +21,7 @@ router.post("/api/offers", upload.single("offer_image"), async (req, res) => {
         const isAdmin = await userInfo.findById(res.user);
         if (isAdmin.role == "admin") {
             const { offer_id, offer_title, offer_description, offer_sort_order,
-                days_of_week, dates_of_month, months_of_year, item_id, quantity } = req.body;
+                days_of_week, dates_of_month, months_of_year, item, quantity } = req.body;
 
             const offerDetails = await offerModel.create({
                 offer_id,
@@ -30,7 +30,7 @@ router.post("/api/offers", upload.single("offer_image"), async (req, res) => {
                 offer_image: req.file.filename,
                 offer_sort_order,
                 content: {
-                    item_id,
+                    item,
                     quantity,
                 },
                 schedule: {
@@ -58,11 +58,6 @@ router.post("/api/offers", upload.single("offer_image"), async (req, res) => {
 });
 
 
-router.get("/api/offerlist/:fileName", (req, res) => {
-    return res.sendFile(path.join(__dirname, `../uploads/${req.params.fileName}`))
-})
-
-
 router.get("/api/offerlist", async (req, res) => {
     try {
         const offerlist = await offerModel.find();
@@ -84,7 +79,7 @@ router.put("/api/offers/:offerId", async (req, res) => {
         if (isAdmin.role == "admin") {
             const { offerId } = req.params;
             const { offer_id, offer_title, offer_description, offer_sort_order,
-                days_of_week, dates_of_month, months_of_year, item_id, quantity } = req.body;
+                days_of_week, dates_of_month, months_of_year, item, quantity } = req.body;
 
             const updateFields = {
                 offer_id,
@@ -92,7 +87,7 @@ router.put("/api/offers/:offerId", async (req, res) => {
                 offer_description,
                 offer_sort_order,
                 content: {
-                    item_id,
+                    item,
                     quantity,
                 },
                 schedule: {
@@ -119,6 +114,13 @@ router.put("/api/offers/:offerId", async (req, res) => {
 });
 
 
-
-
+router.delete("/api/offers/:offerId", async (req, res) => {
+    try {
+        const delete_id = req.params.offerId;
+        await offerModel.deleteOne({_id : delete_id});
+        res.status(200).send({message : "Item deleted"})
+    }catch(err){
+        res.status(500).send({message : e.message})
+    }
+})
 module.exports = router;
